@@ -1,0 +1,148 @@
+---
+title: "R IP"
+author: "Maurice Senzeyi"
+date: "11/20/2021"
+output: html_document
+---
+1. UNDERSTANDING THE CONTEXT
+
+A Kenyan entrepreneur has created an online cryptography course and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected data in the process. She would now like to employ your services as a Data Science Consultant to help her identify which individuals are most likely to click on her ads. 
+
+2. METRIC OF SUCCESS
+
+our main objective is to  analyse the data and gain insights: 
+> Who are clicking the add
+> Which country clicked the add most
+> The Average time spent on the website
+ 
+ 
+3. RECORDING EXPERIMENT DESIGH
+
+>Loading the dataset
+>Data understanding
+>Data cleaning and manipulation
+>Exploratory Data analysis
+
+
+```{r echo=TRUE}
+# load the libraries
+library(dplyr)
+library(ggplot2)
+library(choroplethr)
+library(funModeling)
+library(Hmisc)
+library(readr)
+```
+lets load the dataset
+
+```{r echo=TRUE}
+advertising <- read.csv("C:/Users/Morris/Downloads/advertising.csv")
+head(advertising, 10)
+
+```
+#Dataset Previewing
+```{r}
+View(advertising)
+summary(advertising)
+```
+
+```{R}
+# Using DATAFRAME
+df <- data.frame(advertising)
+
+```
+
+```{r}
+glimpse(df)
+```
+
+
+```{r}
+#checking the duplicates
+length(which(duplicated(df)))
+```
+
+```{r}
+# null values
+length(which(is.na(df)))
+```
+
+```{r}
+#checking outliers
+OutVals = boxplot(df)$out
+which(df %in% OutVals)
+
+```
+
+```{r}
+remove_outliers <- function(df, na.rm = TRUE, ...) {
+    qnt <- quantile(df, probs=c(.25, .75), na.rm = na.rm, ...)
+    H <- 1.5 * IQR(df, na.rm = na.rm)
+    y <- df
+    y[df < (qnt[1] - H)] <- NA
+    y[df > (qnt[2] + H)] <- NA
+    y
+}
+```
+
+```{r}
+plot_num(advertising)
+```
+
+```{r}
+qplot(data = df,
+      x = Country,
+      y = Daily.Internet.Usage,
+      stat = count,
+      breaks=20
+      
+      )
+
+```
+
+```{r}
+##  the descriptive statistics summary of age and income
+
+summary(df$Age)
+summary(df$`Area.Income`)
+summary(df$`Daily.Time.Spent.on.Site`)
+summary(df$`Daily.Internet.Usage`)
+```
+
+```{r}
+range(df$Age)
+range(df$'Area.Income')
+range(df$'Daily.Time.Spent.on.Site')
+range(df$'Daily Internet.Usage')
+```
+#Univariate Analysis
+```{r}
+## histogram for age
+hist(df$Age)
+```
+
+```{r}
+hist(df$'Area.Income')
+```
+
+```{r}
+## distribution of time spent on the site
+hist(df$`Daily.Time.Spent.on.Site`)
+```
+
+```{r}
+### the distribution of daily time spent on the internet
+ hist(df$`Daily.Internet.Usage`)
+```
+
+#Bivariate Analysis
+
+```{r}
+### covvarience of age and income
+plot(df$Age,df$`Daily.Time.Spent.on.Site`)
+```
+
+```{r}
+Country=table(df$Country)
+Country_order=sort(Country,decreasing = TRUE)
+head(Country_order,10)
